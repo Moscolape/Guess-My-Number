@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View, Text } from "react-native";
 import { useEffect, useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
@@ -7,6 +7,7 @@ import OpponentGuess from "../components/game/opponent-guess";
 import PrimaryButton from "../components/ui/primary-button";
 import Card from "../components/ui/card";
 import HintText from "../components/ui/hint-text";
+import GuessContainer from "../components/game/guess-container";
 
 const generateRandomNumber = (min, max, exclude) => {
   let randNum = Math.floor(Math.random() * (max - min)) + min;
@@ -25,10 +26,10 @@ const generateRandomNumber = (min, max, exclude) => {
 let minBoundary = 1;
 let maxBoundary = 100;
 
-const GameScreen = ({ userNumber, endGame }) => {
+const GameScreen = ({ userNumber, endGame, setGuessRounds }) => {
   const initialGuess = generateRandomNumber(1, 100, userNumber);
-
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
+  const [guessedRounds, setGuessedRounds] = useState([initialGuess]);
 
   const nextGuess = (direction) => {
     if (
@@ -55,10 +56,12 @@ const GameScreen = ({ userNumber, endGame }) => {
       currentGuess
     );
     setCurrentGuess(newRandNum);
+    setGuessedRounds((prevGoals) => [...prevGoals, newRandNum]);
   };
 
   useEffect(() => {
     if (currentGuess == userNumber) {
+      setGuessRounds(guessedRounds.length);
       endGame();
       minBoundary = 1;
       maxBoundary = 100;
@@ -71,7 +74,6 @@ const GameScreen = ({ userNumber, endGame }) => {
       <OpponentGuess guess={currentGuess} />
       <Card>
         <HintText>Higher or Lower?</HintText>
-        {/* + - */}
         <View style={styles.buttonContainer}>
           <View style={styles.button}>
             <PrimaryButton onPress={nextGuess.bind(this, "higher")}>
@@ -85,7 +87,8 @@ const GameScreen = ({ userNumber, endGame }) => {
           </View>
         </View>
       </Card>
-      {/* <View>LOG ROUNDS</View> */}
+      <Text style={styles.logs}>LOG ROUNDS</Text>
+      <GuessContainer guessedRounds={guessedRounds}/>
     </View>
   );
 };
@@ -97,7 +100,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 50,
     alignItems: "center",
-    // paddingHorizontal: 24,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -106,4 +108,10 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
   },
+  logs: {
+    marginTop: 20,
+    color: "white",
+    fontSize: 22,
+    fontFamily: "open-sans-bold",
+  }
 });

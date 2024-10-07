@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { ImageBackground, SafeAreaView, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
-import * as SplashScreen from 'expo-splash-screen';
+import * as SplashScreen from "expo-splash-screen";
 
 import StartGameScreen from "./screens/start-game-screen";
 import GameScreen from "./screens/game-screen";
@@ -16,10 +16,12 @@ export default function App() {
   const [userNumber, setUserNumber] = useState();
   const [isGameOver, setIsGameOver] = useState(true);
   const [appIsReady, setAppIsReady] = useState(false);
+  const [guessRounds, setGuessRounds] = useState(0);
+
 
   const [fontsLoaded] = useFonts({
-    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
-    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
+    "open-sans": require("./assets/fonts/OpenSans-Regular.ttf"),
+    "open-sans-bold": require("./assets/fonts/OpenSans-Bold.ttf"),
   });
 
   useEffect(() => {
@@ -42,18 +44,31 @@ export default function App() {
     return null;
   }
 
+  const resetGame = () => {
+    setUserNumber(null);
+  };
+
   let screen = <StartGameScreen entered={handleUserNumber} />;
 
   if (userNumber && !isGameOver) {
-    screen = <GameScreen userNumber={userNumber} endGame={endGame} />;
+    screen = <GameScreen userNumber={userNumber} endGame={endGame} setGuessRounds={setGuessRounds}/>;
   }
 
   if (isGameOver && userNumber) {
-    screen = <GameOver userNumber={userNumber} />;
+    screen = (
+      <GameOver
+        userNumber={userNumber}
+        resetGame={resetGame}
+        guessTrials={guessRounds}
+      />
+    );
   }
 
   return (
-    <LinearGradient colors={[COLORS.primary700, COLORS.accent500]} style={styles.container}>
+    <LinearGradient
+      colors={[COLORS.primary700, COLORS.accent500]}
+      style={styles.container}
+    >
       <ImageBackground
         source={require("./assets/images/background.png")}
         resizeMode="cover"
