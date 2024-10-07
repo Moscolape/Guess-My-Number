@@ -1,6 +1,8 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
-import Title from "../components/ui/title";
+import { Alert, StyleSheet, View } from "react-native";
 import { useEffect, useState } from "react";
+import AntDesign from "@expo/vector-icons/AntDesign";
+
+import Title from "../components/ui/title";
 import OpponentGuess from "../components/game/opponent-guess";
 import PrimaryButton from "../components/ui/primary-button";
 import Card from "../components/ui/card";
@@ -73,12 +75,12 @@ const GameScreen = ({ userNumber, endGame }) => {
         <View style={styles.buttonContainer}>
           <View style={styles.button}>
             <PrimaryButton onPress={nextGuess.bind(this, "higher")}>
-              +
+              <AntDesign name="plus" size={24} color="white" />
             </PrimaryButton>
           </View>
           <View style={styles.button}>
             <PrimaryButton onPress={nextGuess.bind(this, "lower")}>
-              -
+              <AntDesign name="minus" size={24} color="white" />
             </PrimaryButton>
           </View>
         </View>
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
     paddingTop: 50,
-    alignItems: "center"
+    alignItems: "center",
     // paddingHorizontal: 24,
   },
   buttonContainer: {
@@ -103,5 +105,5 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-  }
+  },
 });

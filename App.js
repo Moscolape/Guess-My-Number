@@ -1,15 +1,33 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { ImageBackground, SafeAreaView, StyleSheet } from "react-native";
-import StartGameScreen from "./screens/start-game-screen";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
+import * as SplashScreen from 'expo-splash-screen';
+
+import StartGameScreen from "./screens/start-game-screen";
 import GameScreen from "./screens/game-screen";
-import COLORS from "./constants/colors";
 import GameOver from "./screens/game-over-screen";
+import COLORS from "./constants/colors";
+import { useFonts } from "expo-font";
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [userNumber, setUserNumber] = useState();
   const [isGameOver, setIsGameOver] = useState(true);
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  const [fontsLoaded] = useFonts({
+    'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
+    'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      setAppIsReady(true);
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
   const handleUserNumber = (num) => {
     setUserNumber(num);
@@ -20,16 +38,19 @@ export default function App() {
     setIsGameOver(true);
   }, []);
 
+  if (!appIsReady) {
+    return null;
+  }
+
   let screen = <StartGameScreen entered={handleUserNumber} />;
 
   if (userNumber && !isGameOver) {
-    screen = <GameScreen userNumber={userNumber} endGame={endGame}/>;  // Game running
+    screen = <GameScreen userNumber={userNumber} endGame={endGame} />;
   }
-  
+
   if (isGameOver && userNumber) {
-    screen = <GameOver />;
+    screen = <GameOver userNumber={userNumber} />;
   }
-  
 
   return (
     <LinearGradient colors={[COLORS.primary700, COLORS.accent500]} style={styles.container}>
@@ -49,7 +70,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: "center"
   },
   backgroundImage: {
     opacity: 0.2,

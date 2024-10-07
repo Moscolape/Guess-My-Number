@@ -13,6 +13,6 @@ const styles = StyleSheet.create({
   instruction: {
     color: COLORS.accent500,
     fontSize: 20,
-    fontWeight: "700"
+    fontFamily: 'open-sans'
   }
 })
