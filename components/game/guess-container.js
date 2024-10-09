@@ -1,8 +1,13 @@
-import { StyleSheet, View, FlatList, Text } from "react-native";
+import { StyleSheet, View, FlatList, Text, useWindowDimensions } from "react-native";
+
 
 const GuessContainer = ({ guessedRounds }) => {
+  const { width } = useWindowDimensions();
+
+  const landscapeHeight = width > 500 ? 80 : 250;
+
   return (
-    <View style={styles.guessContainer}>
+    <View style={[styles.guessContainer, {maxHeight: landscapeHeight}]}>
       <FlatList
         data={guessedRounds}
         renderItem={({ item, index }) => {
@@ -35,7 +40,7 @@ const styles = StyleSheet.create({
     fontFamily: "open-sans",
   },
   guessedNumber: {
-    fontWeight: "800",
+    fontWeight: "bold",
     fontSize: 20,
   },
 });

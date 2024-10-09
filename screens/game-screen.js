@@ -1,4 +1,10 @@
-import { Alert, StyleSheet, View, Text } from "react-native";
+import {
+  Alert,
+  StyleSheet,
+  View,
+  Text,
+  useWindowDimensions,
+} from "react-native";
 import { useEffect, useState } from "react";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
@@ -24,12 +30,14 @@ const generateRandomNumber = (min, max, exclude) => {
 };
 
 let minBoundary = 1;
-let maxBoundary = 100;
+let maxBoundary = 1000;
 
 const GameScreen = ({ userNumber, endGame, setGuessRounds }) => {
-  const initialGuess = generateRandomNumber(1, 100, userNumber);
+  const initialGuess = generateRandomNumber(1, 1000, userNumber);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
   const [guessedRounds, setGuessedRounds] = useState([initialGuess]);
+
+  const { width } = useWindowDimensions();
 
   const nextGuess = (direction) => {
     if (
@@ -64,13 +72,12 @@ const GameScreen = ({ userNumber, endGame, setGuessRounds }) => {
       setGuessRounds(guessedRounds.length);
       endGame();
       minBoundary = 1;
-      maxBoundary = 100;
+      maxBoundary = 1000;
     }
   }, [currentGuess, userNumber, endGame]);
 
-  return (
-    <View style={styles.screen}>
-      <Title>Opponent's Guess</Title>
+  let content = (
+    <>
       <OpponentGuess guess={currentGuess} />
       <Card>
         <HintText>Higher or Lower?</HintText>
@@ -88,7 +95,34 @@ const GameScreen = ({ userNumber, endGame, setGuessRounds }) => {
         </View>
       </Card>
       <Text style={styles.logs}>LOG ROUNDS</Text>
-      <GuessContainer guessedRounds={guessedRounds}/>
+    </>
+  );
+
+  if (width > 400) {
+    content = (
+      <>
+        <View style={styles.buttonContainer}>
+          <View style={styles.button}>
+            <PrimaryButton onPress={nextGuess.bind(this, "higher")}>
+              <AntDesign name="plus" size={24} color="white" />
+            </PrimaryButton>
+          </View>
+          <OpponentGuess guess={currentGuess} />
+          <View style={styles.button}>
+            <PrimaryButton onPress={nextGuess.bind(this, "lower")}>
+              <AntDesign name="minus" size={24} color="white" />
+            </PrimaryButton>
+          </View>
+        </View>
+      </>
+    );
+  }
+
+  return (
+    <View style={styles.screen}>
+      <Title>Opponent's Guess</Title>
+      {content}
+      <GuessContainer guessedRounds={guessedRounds} />
     </View>
   );
 };
@@ -104,6 +138,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     marginTop: 20,
+    alignItems: 'center'
   },
   button: {
     flex: 1,
@@ -113,5 +148,5 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 22,
     fontFamily: "open-sans-bold",
-  }
+  },
 });
